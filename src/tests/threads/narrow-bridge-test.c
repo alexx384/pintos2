@@ -46,6 +46,7 @@ void narrow_bridge(unsigned int num_vehicles_left, unsigned int num_vehicles_rig
     create_vehicles(num_vehicles_right, thread_normal_right);
     create_vehicles(num_emergency_left, thread_emergency_left);
     create_vehicles(num_emergency_right, thread_emergency_right);
+    
 
     wait_threads();
 }
