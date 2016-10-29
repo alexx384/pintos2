@@ -48,22 +48,35 @@ void arrive_bridge(enum car_priority prio, enum car_direction dir)
 
 	if(count_of_cars==0)
 	{
+		list_sort (&sema0.waiters,	compare, NULL);
+		list_sort (&sema1.waiters,	compare, NULL);
 		count_of_cars=choose_the_side(dir);
+
+
 		if(count_of_cars==0)
 		{
 			sema_up(&sema0);
-			sema_up(&sema0);
 		}else{
 			sema_up(&sema1);
-			sema_up(&sema1);
 		}
-	}
+		if(dir!=count_of_cars)
+		{
+			if(dir == 0)					//sort cars by sides
+			{	
+				sema_up(&sema1);
+				sema_down(&sema0);
+			}else{
+				sema_up(&sema0);
+				sema_down(&sema1);			
+			}
+		}	
+	}else{
 
-	if(dir == 0)					//sort cars by sides
-		sema_down(&sema0);
-	else
-		sema_down(&sema1);
-	
+		if(dir == 0)					//sort cars by sides
+			sema_down(&sema0);
+		else
+			sema_down(&sema1);	
+	}
 
 
 	// Not implemented
@@ -72,20 +85,46 @@ void arrive_bridge(enum car_priority prio, enum car_direction dir)
 void exit_bridge(enum car_priority prio, enum car_direction dir)
 {
 	static int end_car=0;							//show count of cars, how is here on one transit
+	
+	struct thread *dump;
+	struct list_elem *element;
+
 	end_car++;
 	// Not implemented
-	if(end_car == 1)	sema_down(&sema_ready);		//if there is one car, then we are waiting second car 
+	if(end_car == 1 && (!list_empty(&sema0.waiters) || !list_empty(&sema1.waiters)))	sema_down(&sema_ready);		//if there is one car, then we are waiting second car 
 	else				sema_up(&sema_ready);
 
 	if(dir == 0)									//Change direction every time
 	{
-		sema_up(&sema1);
-		if(list_empty(&sema0.waiters) && end_car==1)//if no one car from other side
-			sema_up(&sema0);	
+		if(!list_empty(&sema1.waiters))
+		{
+			element=list_front (&sema0.waiters);
+			dump=list_entry (element, struct thread, elem);
+			if(thread_current()->car!=2 && end_car==2)	
+				sema_up(&sema1);
+			else
+				sema_up(&sema0);
+		}
+		else
+			sema_up(&sema0);
+
+//		if(list_empty(&sema0.waiters) && end_car==2)//if no one car from other side
+//			sema_up(&sema0);	
 	}else{
-		sema_up(&sema0);
-		if(list_empty(&sema0.waiters) && end_car==1)//if no one car from other side
+		if(!list_empty(&sema0.waiters))	
+		{
+			element=list_front (&sema1.waiters);
+			dump=list_entry (element, struct thread, elem);
+			if(thread_current()->car!=3 && end_car==2)	
+				sema_up(&sema0);
+			else
+				sema_up(&sema1);	
+		}
+		else
 			sema_up(&sema1);
+
+//		if(list_empty(&sema0.waiters) && end_car==2)//if no one car from other side
+//			sema_up(&sema1);
 	}
 		
 	if(end_car==2)	end_car=0;						//if all cars are there
@@ -96,14 +135,12 @@ int choose_the_side(enum car_direction dir)
 	struct thread *cur=thread_current(), *dump;
 	struct list_elem *element;
 
+	if(list_empty(&sema0.waiters))	return 1;
+	if(list_empty(&sema1.waiters))	return 0;
 	
 	if(cur->car == thread_normal_left ||
 	 cur->car == thread_normal_right)
 		return dir-1;
-
-	list_sort (&sema0.waiters,	compare, NULL);
-	list_sort (&sema1.waiters,	compare, NULL);
-
 
 	if(dir == 0)
 	{
@@ -133,10 +170,10 @@ compare (const struct list_elem *a,
 {
   struct thread *t = list_entry (a, struct thread, elem);
   struct thread *g = list_entry (b, struct thread, elem);
-//  msg("t(%d) = %d\tg(%d) = %d",t->tid,t->car, t->tid, g->car);
+	//  msg("t(%d) = %d\tg(%d) = %d",t->tid,t->car, t->tid, g->car);
   
   if(t->car > g->car)
-  	return false;
+       return true;
   else
-  	return true;
+       return false;
 }
