@@ -60,7 +60,6 @@ sema_init (struct semaphore *sema, unsigned value)
 void
 sema_down (struct semaphore *sema) 
 {
-  struct thread *cur=thread_current();
   enum intr_level old_level;
 
   ASSERT (sema != NULL);
