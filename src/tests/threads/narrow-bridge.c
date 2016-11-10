@@ -162,22 +162,31 @@ void exit_bridge(enum car_priority prio, enum car_direction dir)
 	if(antidir == 0)									//Change direction every time
 	{
 		if(list_size (&sema_emer_left_side.waiters) > 1 && end_car==1)
-		{		wake_up_car(1, antidir);	return;}
+		{		wake_up_car(1, antidir);	end_car=7;	return;}
 		if(list_size (&sema_emer_left_side.waiters) > 0 && end_car==0)
 		{		wake_up_car(1, antidir);	return;}
 
 		if(list_size (&sema_emer_right_side.waiters) > 1 && end_car==1)
-		{		wake_up_car(1, dir);	return;	}
+		{		wake_up_car(1, dir);	end_car=6;	return;	}
 		if(list_size (&sema_emer_right_side.waiters) > 0 && end_car==0)
 		{		wake_up_car(1, dir);	return;	}
 
+		if(end_car == 5)
+		{		wake_up_car(1, dir);	end_car=0;	return;}
+		if(end_car == 6)
+		{		wake_up_car(1, antidir);	end_car=0;	return;}
+
 		if(list_size (&sema_emer_left_side.waiters) == 1 && end_car==1 && !list_empty(&sema_norm_left_side.waiters))
 		{		wake_up_car(1, antidir);	end_car=3;	return;}
+		if(list_size (&sema_emer_left_side.waiters) == 1 && end_car==1)
+		{		wake_up_car(1, antidir);	end_car=0;	return;}
 		if(end_car==3)
 		{		wake_up_car(0, dir);	end_car=0;	return;}
 
 		if(list_size (&sema_emer_right_side.waiters) == 1 && end_car==1 && !list_empty(&sema_norm_right_side.waiters))
 		{		wake_up_car(1, dir);	end_car=4;	return;}
+		if(list_size (&sema_emer_right_side.waiters) == 1 && end_car==1)
+		{		wake_up_car(1, dir);	end_car=0;	return;}
 		if(end_car==4)
 		{		wake_up_car(0, antidir);	end_car=0;	return;}
 
@@ -191,15 +200,22 @@ void exit_bridge(enum car_priority prio, enum car_direction dir)
 		wake_up_car(0, dir);	end_car=0;	return;
 
 	}else{
+		//msg("emer_right = %d\temer_left = %d\tend_car = %d",list_size (&sema_emer_right_side.waiters),
+		//list_size (&sema_emer_left_side.waiters), end_car);
 		if(list_size (&sema_emer_right_side.waiters) > 1 && end_car==1)
-		{		wake_up_car(1, antidir);	return;	}
+		{		wake_up_car(1, antidir);	end_car=7;	return;	}
 		if(list_size (&sema_emer_right_side.waiters) > 0 && end_car==0)
 		{		wake_up_car(1, antidir);	return;	}
 
 		if(list_size (&sema_emer_left_side.waiters) > 1 && end_car==1)
-		{		wake_up_car(1, dir);	return;}
+		{		wake_up_car(1, dir);	end_car=6;	return;}
 		if(list_size (&sema_emer_left_side.waiters) > 0 && end_car==0)
 		{		wake_up_car(1, dir);	return;}
+
+		if (end_car == 5)
+		{		wake_up_car(1, dir);	end_car=0;	return;}
+		if (end_car == 6)
+		{		wake_up_car(1, antidir);	end_car=0;	return;}
 
 		if(list_size (&sema_emer_right_side.waiters) == 1 && end_car==1 && !list_empty(&sema_norm_right_side.waiters))
 		{		wake_up_car(1, antidir);	end_car=4;	return;}
