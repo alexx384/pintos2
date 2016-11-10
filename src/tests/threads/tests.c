@@ -48,7 +48,8 @@ static const struct test tests[] =
     {"mlfqs-nice-2", test_mlfqs_nice_2, test_no_args},
     {"mlfqs-nice-10", test_mlfqs_nice_10, test_no_args},
     {"mlfqs-block", test_mlfqs_block, test_no_args},
-    {"narrow-bridge", narrow_bridge, test_args_4uint}
+    {"narrow-bridge", narrow_bridge, test_args_4uint},
+    {"birds", birds, test_no_args}
   };
 
 static const char *test_name;

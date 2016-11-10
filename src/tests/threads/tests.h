@@ -33,6 +33,7 @@ extern test_func test_mlfqs_fair_20;
 extern test_func test_mlfqs_nice_2;
 extern test_func test_mlfqs_nice_10;
 extern test_func test_mlfqs_block;
+extern test_func birds;
 
 void narrow_bridge(unsigned int num_vehicles_left, unsigned int num_vehicles_right,
         unsigned int num_emergency_left, unsigned int num_emergency_right);

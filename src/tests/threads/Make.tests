@@ -38,6 +38,7 @@ tests/threads_SRC += tests/threads/mlfqs-fair.c
 tests/threads_SRC += tests/threads/mlfqs-block.c
 tests/threads_SRC += tests/threads/narrow-bridge.c
 tests/threads_SRC += tests/threads/narrow-bridge-test.c
+tests/threads_SRC += tests/threads/birds.c
 
 MLFQS_OUTPUTS = 				\
 tests/threads/mlfqs-load-1.output		\
